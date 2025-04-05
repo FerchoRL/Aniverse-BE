@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "aniverse-backend",
   "version": "1.0.0",
   "main": "index.js",
@@ -8,5 +9,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2"
+  }
 }

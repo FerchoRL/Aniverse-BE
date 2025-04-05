@@ -1,0 +1,27 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+
+# OS / IDE files
+.DS_Store
+Thumbs.db
+
+# Optional: si usas VS Code
+.vscode/
+
+# Coverage reports (por si usas testing)
+coverage/
+
+# Build (si en algún punto haces un build)
+dist/
+build/
+
+# MongoDB dumps (si llegas a exportar datos)
+dump/
