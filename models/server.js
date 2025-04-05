@@ -3,7 +3,7 @@ import cors from 'cors'
 
 
 //Import Routes
-import userRoutes from '../routes/userRoutes.js';
+// import userRoutes from '../routes/userRoutes.js';
 import dbConnection from '../database/dbConfig.js';
 
 class Server {
@@ -15,7 +15,7 @@ class Server {
         //DB Connection
         this.DBConnection();
 
-        this.routes();
+        //this.routes();
     }
 
     async DBConnection() {
@@ -32,7 +32,7 @@ class Server {
     }
 
     routes() {
-        this.app.use('/api/users', userRoutes)
+        //this.app.use('/api/users', userRoutes)
     }
 
     listenPort() {
