@@ -3,19 +3,23 @@ import cors from 'cors'
 
 
 //Import Routes
-// import userRoutes from '../routes/userRoutes.js';
+import userRoutes from '../routes/userRoutes.js';
 import dbConnection from '../database/dbConfig.js';
 
 class Server {
 
     constructor() {
+        //Inicializa express
         this.app = express();
         this.port = process.env.PORT;
 
-        //DB Connection
+        //Conexion a la BD
         this.DBConnection();
 
-        //this.routes();
+        this.middlewares();
+
+        // Define las rutas principales del API REST
+        this.routes();
     }
 
     async DBConnection() {
@@ -24,7 +28,7 @@ class Server {
 
     middlewares() {
 
-        //CORS
+        // Habilita CORS para todas las rutas y orígenes
         this.app.use(cors())
 
         //Lectura y parseo del body
@@ -32,7 +36,10 @@ class Server {
     }
 
     routes() {
-        //this.app.use('/api/users', userRoutes)
+        //Rutas para usuarios
+        this.app.use('/api/users', userRoutes)
+
+        //Rutas para catalogo de animes
     }
 
     listenPort() {
