@@ -16,6 +16,8 @@ class Server {
         //Conexion a la BD
         this.DBConnection();
 
+        this.middlewares();
+
         // Define las rutas principales del API REST
         this.routes();
     }
