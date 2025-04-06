@@ -1,4 +1,6 @@
 import express from 'express';
+import { check } from 'express-validator';
+
 import {
     addUser,
     getAllUsers,
@@ -13,7 +15,10 @@ router.get('/getAllUsers', getAllUsers)
 
 
 //Add new user
-router.post('/', addUser)
+router.post('/', [
+    check('email','El correo no es valido').isEmail(),
+    
+], addUser)
 
 //Update user
 router.put('/', updateUser)
