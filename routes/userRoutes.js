@@ -1,6 +1,7 @@
 import express from 'express';
 import { check } from 'express-validator';
 import validateFields from '../middlewares/validate-fields.js';
+import { validExistedEmail, validRole } from '../helpers/db-validators.js';
 
 import {
     addUser,
@@ -10,7 +11,6 @@ import {
 }
     from '../controllers/users.controller.js';
 
-import Role from '../models/role.js';
 const router = express.Router();
 
 //Get users
@@ -26,12 +26,10 @@ router.post('/', [
     check('password','El password es obligatorio').notEmpty(),
     check('password','El password debe tener mas de 4 caracteres').isLength({min: 5}),
     check('role','El rol es obligatorio').notEmpty(),
-    check('role').custom( async(role/**Este 'role' es del request */) => {
-         const existRole = await Role.findOne({role});//'Role' es de mi modelo
-         if(!existRole){
-            throw new Error(`El role ${role} no esta registrado en BD`);
-         }
-    }),
+    check('role').custom( (role) => validRole(role) ),//Es lo mismo que abajo debido a que el parametro se llama igual
+    // check('role').custom( validRole ),
+    check('email').custom(validExistedEmail),
+
     validateFields
 ], addUser)
 
