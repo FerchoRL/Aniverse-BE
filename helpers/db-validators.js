@@ -12,7 +12,7 @@ const validExistedEmail = async (email) => {
     const existedEmail = await UserModel.findOne({ email });
     //Si existe regreso status 400
     if (existedEmail) {
-            throw new Error('El correo ya esta registrado')
+            throw new Error('El correo ya está registrado')
     }
 }
 
