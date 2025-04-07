@@ -1,6 +1,4 @@
-import mongoose, { Types } from "mongoose";
-
-const {Schema, model} = mongoose;
+import { Schema, model} from "mongoose";
 
 const UserSchema = new Schema({
     userName:{
@@ -34,5 +32,11 @@ const UserSchema = new Schema({
 
 
 });
+
+// Personaliza la respuesta JSON del usuario ocultando campos sensibles como __v y password y los guardo en usuario
+UserSchema.methods.toJSON = function(){
+    const { __v, password, ...user} = this.toObject();
+    return user;
+}
 
 export default model('Users', UserSchema)
