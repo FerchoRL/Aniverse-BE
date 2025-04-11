@@ -37,7 +37,7 @@ router.post('/', [
 router.put('/', updateUser)
 
 //Remove user
-router.delete('/', removeUser)
+router.delete('/', removeUser);
 
 
 
