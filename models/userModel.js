@@ -28,6 +28,10 @@ const UserSchema = new Schema({
     userOrigin:{
         type: Date,
         default: Date.now
+    },
+    state:{
+        type: Boolean,
+        default: true
     }
 
 

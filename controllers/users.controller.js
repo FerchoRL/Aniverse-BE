@@ -3,10 +3,32 @@ import bcryptjs from 'bcryptjs';
 
 import UserModel from '../models/userModel.js';
 
-const getAllUsers = (req = request, res = response) => {
+const getAllUsers = async (req = request, res = response) => {
+    const users = await UserModel.find();
     res.status(200).json({
-        msg: "Todos los usuarios"
+        users
     });
+}
+
+const getUserByID = async(req = request, res = response) => {
+    //Who request the API
+    const uidToken = req.uidFromToken;
+    //User that I try to found
+    const userID = req.params.id;
+    try {
+        const user = await UserModel.findById(userID);
+        res.status(200).json({
+            user
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            ok:false,
+            msg: 'Error inesperado en get User by ID',
+            userID
+        })
+        
+    }
 }
 
 const addUser = async (req = request, res = response) => {
@@ -44,6 +66,7 @@ const removeUser = (req = request, res = response) => {
 
 export {
     getAllUsers,
+    getUserByID,
     addUser,
     updateUser,
     removeUser
