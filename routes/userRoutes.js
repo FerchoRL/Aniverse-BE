@@ -1,11 +1,16 @@
 import express from 'express';
 import { check } from 'express-validator';
+//Middlewares
 import validateFields from '../middlewares/validate-fields.js';
+import { JWTValidation } from '../middlewares/validate-jwt.js';
+import { validateAdminRole, validateRole } from '../middlewares/roles-validation.js';
+//Helpers
 import { validExistedEmail, validRole } from '../helpers/db-validators.js';
 
 import {
     addUser,
     getAllUsers,
+    getUserByID,
     removeUser,
     updateUser
 }
@@ -13,9 +18,22 @@ import {
 
 const router = express.Router();
 
-//Get users
-router.get('/getAllUsers', getAllUsers)
+//api/users
 
+//Get users
+router.get('/', [
+    JWTValidation,
+    validateAdminRole
+    // validateRole('ADMIN_ROLE')
+], getAllUsers)
+
+//Get user by ID
+router.get('/:id',[
+    JWTValidation,
+    validateAdminRole,
+    check('id', 'El id debe ser un ID de mongo').isMongoId(),
+    validateFields
+], getUserByID)
 
 //Add new user
 router.post('/', [
@@ -29,7 +47,6 @@ router.post('/', [
     check('role').custom( (role) => validRole(role) ),//Es lo mismo que abajo debido a que el parametro se llama igual
     // check('role').custom( validRole ),
     check('email').custom(validExistedEmail),
-
     validateFields
 ], addUser)
 
