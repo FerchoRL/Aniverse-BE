@@ -17,6 +17,15 @@ const getUserByID = async(req = request, res = response) => {
     const userID = req.params.id;
     try {
         const user = await UserModel.findById(userID);
+
+        //Validate if user not exist
+        if (!user) {
+            return res.status(404).json({
+                ok: false,
+                msg: `Usuario no encontrado con ID: ${userID}`
+            })
+        }
+        
         res.status(200).json({
             user
         })
