@@ -30,7 +30,7 @@ router.get('/', [
 //Get user by ID
 router.get('/:id',[
     JWTValidation,
-    validateAdminRole,
+    validateRole('ADMIN_ROLE', 'USER_ROLE'),
     check('id', 'El id debe ser un ID de mongo').isMongoId(),
     validateFields
 ], getUserByID)

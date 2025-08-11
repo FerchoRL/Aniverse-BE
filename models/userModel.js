@@ -22,7 +22,7 @@ const UserSchema = new Schema({
     role:{
         type: String,
         required: true,
-        enum: ['USER_ROLE','ADMIN_ROLE'],
+        enum: ['USER_ROLE','ADMIN_ROLE', 'TEST_ROLE'],
         default: 'USER_ROLE'
     },
     userOrigin:{

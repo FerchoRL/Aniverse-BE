@@ -61,3 +61,8 @@ En la raíz del proyecto, ejecuta los siguientes comandos para instalar las depe
 npm install
 npm install express dotenv cors mongoose
 npm install --save-dev nodemon
+```
+
+Levantar el servidor
+
+npm run dev (Esto ejecuta el script del packaje.json)
