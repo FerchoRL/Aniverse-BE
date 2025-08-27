@@ -69,9 +69,10 @@ const getUserByID = async (req = request, res = response) => {
 const addUser = async (req = request, res = response) => {
 
     //Obtengo el body del request
-    const { userName, email, password, role } = req.body;
+    const { userName, email, password } = req.body;
     //Creo una instancia de mi user schema y le paso los parametros obligatorios
-    const user = new UserModel({ userName, email, password, role });
+    //El rol se asigna por defecto en el schema
+    const user = new UserModel({ userName, email, password });
 
     //Encriptar password
     const salt = bcryptjs.genSaltSync();
