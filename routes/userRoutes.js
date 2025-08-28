@@ -9,6 +9,7 @@ import { validExistedEmail, validRole } from '../helpers/db-validators.js';
 
 import {
     addUser,
+    addStaffUser,
     getAllUsers,
     getUserByID,
     removeUser,
@@ -46,6 +47,21 @@ router.post('/', [
     check('email').custom(validExistedEmail),
     validateFields
 ], addUser)
+
+//Add new staff user
+router.post('/staff', [
+    JWTValidation,
+    validateAdminRole,
+    check('userName','El username es obligatorio').notEmpty(),
+    check('email', 'El correo es obligatorio').notEmpty(),
+    check('email', 'El correo no es valido').isEmail(),
+    check('email').custom(validExistedEmail),
+    check('password','El password es obligatorio').notEmpty(),
+    check('password','El password debe tener mas de 4 caracteres').isLength({min: 5}),
+    check('role','El role es obligatorio').notEmpty(),
+    check('role').custom(validRole),
+    validateFields
+], addStaffUser)
 
 //Update user
 router.put('/', updateUser)
