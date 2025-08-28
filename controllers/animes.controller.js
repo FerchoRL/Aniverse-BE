@@ -15,22 +15,33 @@ const getAnimeByID = (req = request, res = response) => {
 }
 
 const createAnime = async (req = request, res = response) => {
-    
-    //Obtengo el body del request
-    const {
-        title,
-        description,
-        genre,
-        releaseYear,
-        episodes,
-        seasons,
-        duration,
-        type,
-        studio,
-        imageURL
-    } = req.body;
+
+
 
     try {
+
+        //Obtengo el body del request
+        const {
+            title,
+            description,
+            genre,
+            releaseYear,
+            episodes,
+            seasons,
+            duration,
+            type,
+            studio,
+            imageURL
+        } = req.body;
+
+        // Validar title no existe
+        const existingAnime = await animeModel.findOne({ title });
+        if (existingAnime) {
+            return res.status(400).json({
+                msg: "El anime ya existe"
+            });
+        }
+
         //Creo una instancia de mi anime schema y le paso los parametros obligatorios
         const anime = new animeModel({
             title,
@@ -48,7 +59,7 @@ const createAnime = async (req = request, res = response) => {
         //Guardo el anime en la base de datos
         await anime.save();
 
-        res.status(201).json({
+        return res.status(201).json({
             msg: "Anime creado",
             anime
         });

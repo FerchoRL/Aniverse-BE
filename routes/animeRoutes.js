@@ -43,19 +43,41 @@ router.post('/', [
         .isString(),
     check('genre', 'El género es obligatorio y debe ser un arreglo de strings')
         .notEmpty()
-        .isArray(),
-    check('releaseYear', 'El año de lanzamiento debe ser un número')
+        .isArray()
+        .custom(arr => arr.length > 0).withMessage('El género no puede estar vacío'),
+    check('releaseYear', 'El año de lanzamiento debe ser un número (Mayor a 1900)')
         .optional()
         .isInt({ min: 1900, max: new Date().getFullYear() }),
+    //Episodes solo valido para series
     check('episodes', 'El número de episodios debe ser un número')
         .optional()
-        .isInt({ min: 1 }),
+        .isInt({ min: 1 })
+        .custom(value => {
+            if (value && value !== 'serie') {
+                throw new Error('El número de episodios solo es válido para series');
+            }
+            return true;
+        }),
+    //Seasons solo valido para series
     check('seasons', 'El número de temporadas debe ser un número')
         .optional()
-        .isInt({ min: 1 }),
+        .isInt({ min: 1 })
+        .custom(value => {
+            if (value && value !== 'serie') {
+                throw new Error('El número de temporadas solo es válido para series');
+            }
+            return true;
+        }),
+    //Duration solo valido para películas
     check('duration', 'La duración debe ser un número')
         .optional()
-        .isInt({ min: 1 }),
+        .isInt({ min: 1 })
+        .custom(value => {
+            if (value && value !== 'pelicula') {
+                throw new Error('La duración solo es válida para películas');
+            }
+            return true;
+        }),
     check('studio', 'El estudio debe ser un texto')
         .optional()
         .isString(),
