@@ -3,8 +3,9 @@ import cors from 'cors'
 
 
 //Import Routes
-import userRoutes from '../routes/userRoutes.js';
 import authRoutes from '../routes/authRoutes.js'
+import userRoutes from '../routes/userRoutes.js';
+import animeRoutes from '../routes/animeRoutes.js';
 import dbConnection from '../database/dbConfig.js';
 
 class Server {
@@ -22,6 +23,7 @@ class Server {
         // Define las rutas principales del API REST
         this.usersPath = '/api/users';
         this.authPath = '/api/auth';
+        this.animesPath = '/api/animes';
         this.routes();
     }
 
@@ -39,11 +41,12 @@ class Server {
     }
 
     routes() {
-        //Rutas para usuarios
+        //Rutas de autenticación
         this.app.use(this.authPath, authRoutes)
+        //Rutas para usuarios
         this.app.use(this.usersPath, userRoutes)
-
         //Rutas para catalogo de animes
+        this.app.use(this.animesPath, animeRoutes);
     }
 
     listenPort() {
