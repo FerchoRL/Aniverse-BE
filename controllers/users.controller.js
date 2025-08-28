@@ -35,21 +35,21 @@ const getUserByID = async (req = request, res = response) => {
         }
 
         //// If the requester is a USER_ROLE, only allow fetching their own profile with limited info
-        if(role === "USER_ROLE" && id === userID){
+        if (role === "USER_ROLE" && id === userID) {
             const { userName, email, img, animeCollection } = user.toObject();
 
             return res.status(200).json({
                 user: {
                     userName,
                     email,
-                    img: img||null,
-                    animeCollection: animeCollection||[]
+                    img: img || null,
+                    animeCollection: animeCollection || []
                 }
             })
         }
         else {
             return res.status(403).json({
-                ok:false,
+                ok: false,
                 msg: 'Usuario no autorizado para ver este perfil'
             })
         }
@@ -68,24 +68,64 @@ const getUserByID = async (req = request, res = response) => {
 
 const addUser = async (req = request, res = response) => {
 
-    //Obtengo el body del request
-    const { userName, email, password } = req.body;
-    //Creo una instancia de mi user schema y le paso los parametros obligatorios
-    //El rol se asigna por defecto en el schema
-    const user = new UserModel({ userName, email, password });
+    try {
 
-    //Encriptar password
-    const salt = bcryptjs.genSaltSync();
-    user.password = bcryptjs.hashSync(password, salt);
+        //Obtengo el body del request
+        const { userName, email, password } = req.body;
+        //Creo una instancia de mi user schema y le paso los parametros obligatorios
+        //El rol se asigna por defecto en el schema
+        const user = new UserModel({ userName, email, password });
 
-    //Guardar en BD
+        //Encriptar password
+        const salt = bcryptjs.genSaltSync();
+        user.password = bcryptjs.hashSync(password, salt);
 
-    await user.save();
+        //Guardar en BD
 
-    res.status(200).json({
-        msg: "User creado",
-        user
-    });
+        await user.save();
+
+        return res.status(200).json({
+            msg: "User creado",
+            user
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(400).json({
+            msg: 'Error inesperado al crear usuario',
+            err
+        });
+    }
+}
+
+//Create staff user
+
+const addStaffUser = async (req = request, res = response) => {
+
+    try {
+
+        //Obtengo el body del request
+        const { userName, email, password, role } = req.body;
+        //Creo una instancia de mi user schema y le paso los parametros obligatorios
+        const user = new UserModel({ userName, email, password, role });
+
+        //Encriptar password
+        const salt = bcryptjs.genSaltSync();
+        user.password = bcryptjs.hashSync(password, salt);
+
+        //Guardar en BD
+
+        await user.save();
+
+        return res.status(201).json({
+            msg: `Usuario de tipo ${role} creado`,
+            user
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(400).json({
+            msg: 'Error al crear usuario de staff'
+        });
+    }
 }
 
 const updateUser = (req = request, res = response) => {
@@ -104,6 +144,7 @@ export {
     getAllUsers,
     getUserByID,
     addUser,
+    addStaffUser,
     updateUser,
     removeUser
 }
