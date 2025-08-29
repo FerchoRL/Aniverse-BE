@@ -2,10 +2,34 @@ import { request, response } from "express";
 import animeModel from "../models/animeModel.js";
 
 const getAllAnimes = async (req = request, res = response) => {
-    const animes = await animeModel.find();
-    res.status(200).json({
-        animes
-    });
+
+    try {
+        
+        // offset = numero de elementos que ya tiene el frontend
+        const offset = Number(req.query.offset) || 0;
+        const limit = Math.min(Number(req.query.limit) || 20, 50); //Por defecto 20 animes por request, max 50
+
+        //Traemos los animes de la base de datos
+        const [animes, total] = await Promise.all([
+            animeModel.find({}, "imageURL title description type studio")
+            .sort({ title: 1, createdAt: -1 })//Ordenar por título de forma ascendente y luego por creación
+            .skip(offset)
+            .limit(limit),
+            animeModel.countDocuments()
+        ]);
+
+        return res.json({
+            total,// Total de animes en la base de datos
+            count: animes.length,// Total de animes devueltos en la respuesta
+            data: animes,
+        })
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            msg: "Error al obtener animes"
+        });
+    }
 }
 
 const getAnimeByID = (req = request, res = response) => {

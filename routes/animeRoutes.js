@@ -1,5 +1,5 @@
 import express from 'express';
-import { check } from 'express-validator';
+import { check, query } from 'express-validator';
 //Middlewares
 import { JWTValidation } from '../middlewares/validate-jwt.js';
 import validateFields from '../middlewares/validate-fields.js';
@@ -20,7 +20,10 @@ const router = express.Router();
 //Get animes
 
 router.get('/', [
-    JWTValidation
+    JWTValidation,
+    query('offset', 'El offset debe ser un número positivo').optional().isInt({ min: 0 }),
+    query('limit', 'El limit debe ser un número mayor a 1 y menor o igual a 50').optional().isInt({ min: 1, max: 50 }),
+    validateFields
 ], getAllAnimes);
 
 
@@ -52,8 +55,8 @@ router.post('/', [
     check('episodes', 'El número de episodios debe ser un número')
         .optional()
         .isInt({ min: 1 })
-        .custom(value => {
-            if (value && value !== 'serie') {
+        .custom((value, {req}) => {
+            if (value && req.body.type !== 'serie') {
                 throw new Error('El número de episodios solo es válido para series');
             }
             return true;
@@ -62,8 +65,8 @@ router.post('/', [
     check('seasons', 'El número de temporadas debe ser un número')
         .optional()
         .isInt({ min: 1 })
-        .custom(value => {
-            if (value && value !== 'serie') {
+        .custom((value, {req}) => {
+            if (value && req.body.type !== 'serie') {
                 throw new Error('El número de temporadas solo es válido para series');
             }
             return true;
@@ -72,8 +75,8 @@ router.post('/', [
     check('duration', 'La duración debe ser un número')
         .optional()
         .isInt({ min: 1 })
-        .custom(value => {
-            if (value && value !== 'pelicula') {
+        .custom((value, {req}) => {
+            if (value && req.body.type !== 'pelicula') {
                 throw new Error('La duración solo es válida para películas');
             }
             return true;
