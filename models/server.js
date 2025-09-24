@@ -6,6 +6,7 @@ import cors from 'cors'
 import authRoutes from '../routes/authRoutes.js'
 import userRoutes from '../routes/userRoutes.js';
 import animeRoutes from '../routes/animeRoutes.js';
+import userCollectionRoutes from '../routes/userCollectionRoutes.js';
 import dbConnection from '../database/dbConfig.js';
 
 class Server {
@@ -24,6 +25,7 @@ class Server {
         this.usersPath = '/api/users';
         this.authPath = '/api/auth';
         this.animesPath = '/api/animes';
+        this.userCollectionPath = '/api/user-collection';
         this.routes();
     }
 
@@ -47,6 +49,8 @@ class Server {
         this.app.use(this.usersPath, userRoutes)
         //Rutas para catalogo de animes
         this.app.use(this.animesPath, animeRoutes);
+        //Rutas para la coleccion de animes del usuario
+        this.app.use(this.userCollectionPath, userCollectionRoutes);
     }
 
     listenPort() {
