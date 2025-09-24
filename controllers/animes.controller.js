@@ -1,21 +1,21 @@
 import { request, response } from "express";
-import animeModel from "../models/animeModel.js";
+import AnimeModel from "../models/animeModel.js";
 
 const getAllAnimes = async (req = request, res = response) => {
 
     try {
-        
+
         // offset = numero de elementos que ya tiene el frontend
         const offset = Number(req.query.offset) || 0;
         const limit = Math.min(Number(req.query.limit) || 20, 50); //Por defecto 20 animes por request, max 50
 
         //Traemos los animes de la base de datos
         const [animes, total] = await Promise.all([
-            animeModel.find({}, "imageURL title description type studio")
-            .sort({ title: 1, createdAt: -1 })//Ordenar por título de forma ascendente y luego por creación
-            .skip(offset)
-            .limit(limit),
-            animeModel.countDocuments()
+            AnimeModel.find({}, "imageURL title description type studio")
+                .sort({ title: 1, createdAt: -1 })//Ordenar por título de forma ascendente y luego por creación
+                .skip(offset)
+                .limit(limit),
+            AnimeModel.countDocuments()
         ]);
 
         return res.json({
@@ -28,6 +28,41 @@ const getAllAnimes = async (req = request, res = response) => {
         console.error(error);
         res.status(500).json({
             msg: "Error al obtener animes"
+        });
+    }
+}
+
+const searchAnimes = async (req = request, res = response) => {
+
+    try {
+        const { query = '', offset = 0, limit = 20 } = req.query;
+        const filter = {};
+
+        const regex = new RegExp(query, 'i'); // 'i' para búsqueda case-insensitive
+        filter.$or = [
+            { title: regex },
+            { type: regex },
+            { studio: regex },
+            { genre: regex } // MongoDB puede buscar en arrays directamente con regex
+        ];
+
+        const animes = await AnimeModel.find(filter, "imageURL title description type studio genre")
+            .sort({ title: 1, createdAt: -1 }) // Ordenar por título de forma ascendente y luego por creación
+            .skip(Number(offset))
+            .limit(Number(limit)); // Limitar a un máximo de 50 resultados
+
+        const total = await AnimeModel.countDocuments(filter);
+
+        return res.json({
+            total, // Total de animes que coinciden con la búsqueda
+            count: animes.length, // Total de animes devueltos en la respuesta
+            data: animes,
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({
+            msg: "Error al buscar animes"
         });
     }
 }
@@ -109,6 +144,7 @@ const deleteAnimeByID = (req = request, res = response) => {
 
 export {
     getAllAnimes,
+    searchAnimes,
     getAnimeByID,
     createAnime,
     updateAnimeByID,
