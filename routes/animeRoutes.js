@@ -7,6 +7,7 @@ import validateFields from '../middlewares/validate-fields.js';
 //APIs for anime
 import {
     getAllAnimes,
+    searchAnimes,
     getAnimeByID,
     createAnime,
     updateAnimeByID,
@@ -26,6 +27,12 @@ router.get('/', [
     validateFields
 ], getAllAnimes);
 
+//GET /api/animes/search
+router.get('/search',[
+    JWTValidation,
+    query('query', 'El query de busqueda no debe ser vacio').not().isEmpty(),
+    validateFields
+], searchAnimes);
 
 //Get anime by ID
 router.get('/:id', [
@@ -34,7 +41,7 @@ router.get('/:id', [
     validateFields
 ], getAnimeByID);
 
-//Create new anime
+//POST /api/animes
 router.post('/', [
     JWTValidation,
     check('title', 'El título es obligatorio').notEmpty(),
