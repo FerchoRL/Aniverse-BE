@@ -33,6 +33,7 @@ const getAllUsers = async (req = request, res = response) => {
             // Seleccionar y renombrar campos
             {
                 $project: {
+                    _id: 0,
                     uid: "$_id",
                     userName: 1,
                     email: 1,
