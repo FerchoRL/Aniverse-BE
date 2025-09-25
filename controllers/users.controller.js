@@ -5,10 +5,59 @@ import UserModel from '../models/userModel.js';
 import UserCollectionModel from '../models/UserCollectionModel.js';
 
 const getAllUsers = async (req = request, res = response) => {
-    const users = await UserModel.find();
-    res.status(200).json({
-        users
-    });
+    try {
+
+        //Parametros de paginacion
+        const { offset = 0, limit = 25 } = req.query;
+
+        // Convertir offset y limit a números enteros
+        const offsetNum = Number(offset);
+        const limitNum = Math.min(Number(limit), 100); // Limitar el máximo a 100
+
+        // Agregamos total de animes a cada usuario usando aggregate
+        const users = await UserModel.aggregate([
+            {
+                $lookup: {
+                    from: 'usercollections', // Nombre de la colección en MongoDB
+                    localField: '_id', //Campo local en Users
+                    foreignField: 'user',//Campo en UserCollections que referencia a Users
+                    as: 'collection' //Nombre del array resultante
+                }
+            },
+            // Calcular el total de animes en la colección
+            {
+                $addFields: {
+                    totalAnimes: { $size: { $ifNull: ["$collection.animes", []] } }
+                }
+            },
+            // Seleccionar y renombrar campos
+            {
+                $project: {
+                    uid: "$_id",
+                    userName: 1,
+                    email: 1,
+                    role: 1,
+                    userOrigin: 1,
+                    state: 1,
+                    totalAnimes: 1
+                }
+            },
+            { $skip: offsetNum },
+            { $limit: limitNum }
+        ]);
+
+        res.status(200).json({
+            ok: true,
+            users
+        });
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado en get All Users'
+        });
+    }
 }
 
 const getUserByID = async (req = request, res = response) => {

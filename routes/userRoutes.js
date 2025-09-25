@@ -1,5 +1,5 @@
 import express from 'express';
-import { check } from 'express-validator';
+import { check, query } from 'express-validator';
 //Middlewares
 import validateFields from '../middlewares/validate-fields.js';
 import { JWTValidation } from '../middlewares/validate-jwt.js';
@@ -24,8 +24,11 @@ const router = express.Router();
 //Get users
 router.get('/', [
     JWTValidation,
-    validateAdminRole
-    // validateRole('ADMIN_ROLE')
+    query('offset', 'El offset debe ser un número positivo').optional().isInt({ min: 0 }),
+    query('limit', 'El limit debe ser un número mayor a 1 y menor o igual a 100').optional().isInt({ min: 1, max: 100 }),
+    validateFields,
+    validateAdminRole,
+    validateRole('ADMIN_ROLE')
 ], getAllUsers)
 
 //Get user by ID
