@@ -2,6 +2,7 @@ import { request, response } from 'express'
 import bcryptjs from 'bcryptjs';
 
 import UserModel from '../models/userModel.js';
+import UserCollectionModel from '../models/UserCollectionModel.js';
 
 const getAllUsers = async (req = request, res = response) => {
     const users = await UserModel.find();
@@ -11,11 +12,13 @@ const getAllUsers = async (req = request, res = response) => {
 }
 
 const getUserByID = async (req = request, res = response) => {
-    //Who request the API
-    const uidToken = req.uidFromToken;
-    //User that I try to found
-    const userID = req.params.id;
+
     try {
+
+        //Who request the API
+        const uidToken = req.uidFromToken;
+        //User that I try to found
+        const userID = req.params.id;
         const user = await UserModel.findById(userID);
 
         //Validate if user not exist
@@ -26,24 +29,31 @@ const getUserByID = async (req = request, res = response) => {
             })
         }
 
+        //Get user Anime Collection
+        const userAnimeCollection = await UserCollectionModel.findOne({ user: userID });
+
+        //Count total animes in user collection
+        const TotalAnimes = userAnimeCollection ? userAnimeCollection.animes.length : 0;
+
         const { role, id } = req.userFromToken;
         //If user is ADMIN_ROLE return all user info
         if (role === "ADMIN_ROLE") {
             return res.status(200).json({
-                user
+                user,
+                TotalAnimes
             });
         }
 
         //// If the requester is a USER_ROLE, only allow fetching their own profile with limited info
         if (role === "USER_ROLE" && id === userID) {
-            const { userName, email, img, animeCollection } = user.toObject();
+            const { userName, email, img } = user.toObject();
 
             return res.status(200).json({
                 user: {
                     userName,
                     email,
                     img: img || null,
-                    animeCollection: animeCollection || []
+                    TotalAnimes
                 }
             })
         }
