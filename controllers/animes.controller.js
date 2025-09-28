@@ -46,7 +46,7 @@ const searchAnimes = async (req = request, res = response) => {
             { genre: regex } // MongoDB puede buscar en arrays directamente con regex
         ];
 
-        const animes = await AnimeModel.find(filter, "imageURL title description type studio genre")
+        const animes = await AnimeModel.find(filter, "imageURL title description type studio genre seasons episodes duration releaseYear")
             .sort({ title: 1, createdAt: -1 }) // Ordenar por título de forma ascendente y luego por creación
             .skip(Number(offset))
             .limit(Number(limit)); // Limitar a un máximo de 50 resultados
@@ -67,10 +67,46 @@ const searchAnimes = async (req = request, res = response) => {
     }
 }
 
-const getAnimeByID = (req = request, res = response) => {
-    res.status(200).json({
-        msg: "Anime encontrado"
-    });
+const getAnimeByID = async (req = request, res = response) => {
+    const { id } = req.params;
+
+    try {
+        const anime = await AnimeModel.findById(id);
+        if (!anime) {
+            return res.status(404).json({
+                msg: "Anime no encontrado"
+            });
+        }
+
+        // Formatear la respuesta según tipo
+        const response = {
+            id: anime._id,
+            title: anime.title,
+            description: anime.description,
+            genre: anime.genre,
+            releaseYear: anime.releaseYear,
+            type: anime.type,
+            studio: anime.studio,
+            imageURL: anime.imageURL
+        };
+
+        if (anime.type === "serie") {
+            response.episodes = anime.episodes;
+            response.seasons = anime.seasons;
+        } else if (anime.type === "pelicula") {
+            response.duration = anime.duration;
+        }
+
+        return res.json({
+            data: response
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            msg: "Error al obtener anime por ID"
+        });
+    }
 }
 
 const createAnime = async (req = request, res = response) => {
