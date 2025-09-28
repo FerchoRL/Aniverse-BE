@@ -2,6 +2,7 @@ import { request, response } from "express";
 import UserCollectionModel from "../models/UserCollectionModel.js";
 import animeModel from "../models/animeModel.js";
 
+// Add an anime to the user's collection
 const addAnimeToCollection = async (req = request, res = response) => {
     try {
 

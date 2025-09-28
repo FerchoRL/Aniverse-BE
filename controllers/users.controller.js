@@ -4,6 +4,7 @@ import bcryptjs from 'bcryptjs';
 import UserModel from '../models/userModel.js';
 import UserCollectionModel from '../models/UserCollectionModel.js';
 
+//get all users with pagination
 const getAllUsers = async (req = request, res = response) => {
     try {
 
@@ -61,6 +62,7 @@ const getAllUsers = async (req = request, res = response) => {
     }
 }
 
+//Get user by ID with role validation
 const getUserByID = async (req = request, res = response) => {
 
     try {
@@ -126,6 +128,7 @@ const getUserByID = async (req = request, res = response) => {
     }
 }
 
+//Create new user
 const addUser = async (req = request, res = response) => {
 
     try {

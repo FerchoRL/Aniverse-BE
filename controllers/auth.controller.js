@@ -3,6 +3,7 @@ import userModel from "../models/userModel.js";
 import generateJWT from "../helpers/generateJWT.js";
 import bcrypt from 'bcryptjs';
 
+//Login user
 const login = async (req = request, res = response) => {
 
     try {
