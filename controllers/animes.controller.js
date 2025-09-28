@@ -1,6 +1,7 @@
 import { request, response } from "express";
 import AnimeModel from "../models/animeModel.js";
 
+// Get all animes with pagination
 const getAllAnimes = async (req = request, res = response) => {
 
     try {
@@ -32,6 +33,7 @@ const getAllAnimes = async (req = request, res = response) => {
     }
 }
 
+// Search animes by title, type, studio, or genre with pagination
 const searchAnimes = async (req = request, res = response) => {
 
     try {
@@ -67,6 +69,7 @@ const searchAnimes = async (req = request, res = response) => {
     }
 }
 
+// Get anime by ID with formatted response based on type (serie/pelicula)
 const getAnimeByID = async (req = request, res = response) => {
     const { id } = req.params;
 
@@ -109,10 +112,8 @@ const getAnimeByID = async (req = request, res = response) => {
     }
 }
 
+// Create a new anime
 const createAnime = async (req = request, res = response) => {
-
-
-
     try {
 
         //Obtengo el body del request
@@ -165,6 +166,7 @@ const createAnime = async (req = request, res = response) => {
         });
     }
 }
+
 
 const updateAnimeByID = (req = request, res = response) => {
     res.status(200).json({

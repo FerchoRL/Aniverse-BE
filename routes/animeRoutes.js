@@ -4,6 +4,8 @@ import { check, query } from 'express-validator';
 import { JWTValidation } from '../middlewares/validate-jwt.js';
 import validateFields from '../middlewares/validate-fields.js';
 
+import { validateAdminRole } from '../middlewares/roles-validation.js';
+
 //APIs for anime
 import {
     getAllAnimes,
@@ -18,8 +20,7 @@ import {
 const router = express.Router();
 //api/animes
 
-//Get animes
-
+//Get all animes
 router.get('/', [
     JWTValidation,
     query('offset', 'El offset debe ser un número positivo').optional().isInt({ min: 0 }),
@@ -44,6 +45,7 @@ router.get('/:id', [
 //POST /api/animes
 router.post('/', [
     JWTValidation,
+    validateAdminRole,
     check('title', 'El título es obligatorio').notEmpty(),
     check('type', 'El tipo es obligatorio y debe ser uno de los siguientes: serie, pelicula')
         .notEmpty()
@@ -96,7 +98,8 @@ router.post('/', [
 
 //Update anime by ID
 router.put('/:id', [
-    JWTValidation,
+    JWTValidation,,
+    validateAdminRole,
     check('id', 'El id debe ser un ID de mongo').isMongoId(),
     validateFields
 ], updateAnimeByID);
@@ -104,6 +107,7 @@ router.put('/:id', [
 //Remove anime by ID
 router.delete('/:id', [
     JWTValidation,
+    validateAdminRole,
     check('id', 'El id debe ser un ID de mongo').isMongoId(),
     validateFields
 ], deleteAnimeByID);
