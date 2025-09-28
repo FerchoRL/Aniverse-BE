@@ -51,4 +51,45 @@ const addAnimeToCollection = async (req = request, res = response) => {
     }
 }
 
-export { addAnimeToCollection };
+
+// Remove an anime from the user's collection
+const removeAnimeFromCollection = async (req = request, res = response) => {
+    try {
+        const { animeId } = req.params;
+        const userId = req.userFromToken.id;
+
+        // Verificar si el usuario tiene una colección
+        const userCollection = await UserCollectionModel.findOne({ user: userId });
+        if (!userCollection) {
+            return res.status(404).json({
+                msg: "El usuario no tiene una colección"
+            });
+        }
+        // Verificar si el anime está en la colección del usuario
+        const animeIndex = userCollection.animes.findIndex(anime => anime.toString() === animeId);
+        if (animeIndex === -1) {
+            return res.status(404).json({
+                msg: "El anime no está en la colección del usuario"
+            });
+        }
+        // Remover el anime de la colección del usuario
+        userCollection.animes.splice(animeIndex, 1);
+        await userCollection.save();
+
+        return res.json({
+            ok: true,
+            msg: 'Anime removido de la colección'
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            msg: "Error eliminando anime de colección"
+        });
+    }
+}
+
+export {
+    addAnimeToCollection,
+    removeAnimeFromCollection
+};
