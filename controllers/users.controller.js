@@ -81,41 +81,37 @@ const getUserByID = async (req = request, res = response) => {
             })
         }
 
+        //Convertir a objeto para manipular
+        const userObj = user.toObject();
+
         //Get user Anime Collection
         const userAnimeCollection = await UserCollectionModel.findOne({ user: userID });
 
         //Count total animes in user collection
         const TotalAnimes = userAnimeCollection ? userAnimeCollection.animes.length : 0;
 
+        //Base response object
+        let userResponse = {
+            userName: userObj.userName,
+            email: userObj.email,
+            img: userObj.img || null,
+            TotalAnimes
+        }
+
         const { role, id } = req.userFromToken;
         //If user is ADMIN_ROLE return all user info
         if (role === "ADMIN_ROLE") {
-            return res.status(200).json({
-                user,
+            userResponse = {
+                ...userObj,
                 TotalAnimes
-            });
+            }
         }
 
-        //// If the requester is a USER_ROLE, only allow fetching their own profile with limited info
-        if (role === "USER_ROLE" && id === userID) {
-            const { userName, email, img } = user.toObject();
-
-            return res.status(200).json({
-                user: {
-                    userName,
-                    email,
-                    img: img || null,
-                    TotalAnimes
-                }
-            })
-        }
-        else {
-            return res.status(403).json({
-                ok: false,
-                msg: 'Usuario no autorizado para ver este perfil'
-            })
-        }
-
+        //Return response
+        return res.status(200).json({
+            ok: true,
+            user: userResponse
+        });
 
     } catch (error) {
         console.error(error);
